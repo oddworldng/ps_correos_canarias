@@ -29,17 +29,17 @@ class Model
     public function installZone($zone)
     {
         Db::getInstance()->insert('zone', array(
-            'id_zone'           => (int)'',
-            'name'              => pSQL($zone),
-            'active'            => (int)'1',
+            'id_zone' => (int)'',
+            'name' => pSQL($zone),
+            'active' => (int)'1',
         ));
     }
 
     public function installZoneShop($id_zone)
     {
         Db::getInstance()->insert('zone_shop', array(
-            'id_zone'           => (int)$id_zone,
-            'id_shop'            => (int)'1',
+            'id_zone' => (int)$id_zone,
+            'id_shop' => (int)'1',
         ));
     }
 
@@ -48,8 +48,9 @@ class Model
     {
         $sql = '
             SELECT `id_zone`
-            FROM `'._DB_PREFIX_.'zone`
-            WHERE `name`="'.pSQL($zone).'"
+            FROM `' . _DB_PREFIX_ . 'zone`
+            WHERE `name`="' . pSQL($zone) . '"
+            ORDER BY `id_zone` DESC LIMIT 1
         ';
         $value = Db::getInstance()->ExecuteS($sql);
         return $value[0]["id_zone"];
@@ -77,165 +78,148 @@ class Model
         return $result;
     }
 
-
-
-    public function getIDState($state)
+    /* INSERT a new Carrier in ps_carrier */
+    public function insertCarrier($name)
     {
-        $sql = '
-            SELECT `id_state`
-            FROM `'._DB_PREFIX_.'state`
-            WHERE `name`="'.pSQL($state).'"
-        ';
-        $value = Db::getInstance()->ExecuteS($sql);
-        return $value[0]["id_state"];
-    }
-
-    /* GETS ID Country (ps_country) using country iso code */
-    public function getIDCountry($country)
-    {
-        $sql = '
-            SELECT `id_country`
-            FROM `'._DB_PREFIX_.'country`
-            WHERE `iso_code`="'.pSQL($country).'"
-        ';
-        $value = Db::getInstance()->ExecuteS($sql);
-        return $value[0]["id_country"];
-    }
-
-    /* GETS ID Tax (ps_tax) using rate (percent) */
-    public function getIDTax($rate)
-    {
-        $sql = '
-            SELECT `id_tax`
-            FROM `'._DB_PREFIX_.'tax`
-            WHERE `rate`='.(float)$rate.'
-        ';
-        $value = Db::getInstance()->ExecuteS($sql);
-        return $value[0]["id_tax"];
-    }
-
-    /* GETS (ps_lang) how many languages are installed */
-    public function getLangCount()
-    {
-        $sql = '
-            SELECT COUNT(*) AS `n`
-            FROM `'._DB_PREFIX_.'lang`
-        ';
-        $value = Db::getInstance()->ExecuteS($sql);
-        return $value[0]["n"];
-    }
-
-    public function getIDTaxRuleGroup($taxRule)
-    {
-        $sql = '
-            SELECT `id_tax_rules_group`
-            FROM `'._DB_PREFIX_.'tax_rules_group`
-            WHERE `name`="'.pSQL($taxRule).'"
-        ';
-        $value = Db::getInstance()->ExecuteS($sql);
-        return $value[0]["id_tax_rules_group"];
-    }
-
-    public function installTax($rate)
-    {
-        Db::getInstance()->insert('tax', array(
-            'id_tax'            => (int)'',
-            'rate'              => (float)$rate,
-            'active'            => (int)1,
-            'deleted'           => (int)0,
-        ));
-    }
-
-    public function installTaxLang($name, $taxRate)
-    {
-        for ($i = 1; $i <= $this->getLangCount(); $i++) {
-            Db::getInstance()->insert('tax_lang', array(
-                'id_tax'            => (int)$this->getIDTax($taxRate),
-                'id_lang'           => (int)$i,
-                'name'              => pSQL($name),
-            ));
-        }
-    }
-
-    public function installTaxRules($state, $taxRate, $taxGroup)
-    {
-        Db::getInstance()->insert('tax_rule', array(
-            'id_tax'                => (int)'',
-            'id_tax_rules_group'    => (int)$this->getIDTaxRuleGroup($taxGroup),
-            'id_country'            => (int)$this->getIDCountry("ES"),
-            'id_state'              => (int)$this->getIDState($state),
-            'zipcode_from'          => pSQL("0"),
-            'zipcode_to'            => pSQL("0"),
-            'id_tax'                => (int)$this->getIDTax($taxRate),
-            'behavior'              => (int)0,
-            'description'           => pSQL("IGIC. Impuesto para Canarias"),
+        Db::getInstance()->insert('carrier', array(
+            'id_carrier' => (int)'',
+            'id_reference' => (int)'1',
+            'id_tax_rules_group' => (int)'0',
+            'name' => (int)$name,
+            'url' => pSQL(''),
+            'active' => (int)'0',
+            'deleted' => (int)'0',
+            'shipping_handling' => (int)'0',
+            'range_behavior' => (int)'0',
+            'is_module' => (int)'0',
+            'is_free' => (int)'0',
+            'shipping_external' => (int)'0',
+            'need_range' => (int)'0',
+            'external_module_name' => pSQL(''),
+            'shipping_method' => (int)'1',
+            'position' => (int)'0',
+            'max_width' => (int)'0',
+            'max_height' => (int)'0',
+            'max_depth' => (int)'0',
+            'max_weight' => (int)'0.000000',
+            'grade' => (int)'0',
         ));
 
         return true;
     }
 
-    /* DELETE Zone (ps_zone): Canarias */
-    public function delZone($zone)
+    /* GET ID Carrier from ps_carrier by name */
+    public function getIDCarrier($name)
     {
         $sql = '
-            DELETE FROM '._DB_PREFIX_.'zone
-            WHERE `id_zone`='.(int)$this->getIDZone($zone).'
+            SELECT `id_carrier`
+            FROM `' . _DB_PREFIX_ . 'carrier`
+            WHERE `name`="' . pSQL($name) . '"
+            ORDER BY `id_carrier` DESC LIMIT 1
         ';
+        $value = Db::getInstance()->ExecuteS($sql);
+        return $value[0]["id_carrier"];
+    }
 
-        Db::getInstance()->ExecuteS($sql);
+    /* INSERT a user group for a carrier */
+    public function insertCarrierGroup($id_carrier, $id_group)
+    {
+        Db::getInstance()->insert('carrier_group', array(
+            'id_carrier'    => (int)$id_carrier,
+            'id_group'      => (int)$id_group,
+        ));
 
         return true;
     }
 
-    /* DELETE State (ps_state): Santa Cruz de Tenerfe & Las Palmas */
-    public function delState($state)
+    /* INSERT carrier delay for a carrier */
+    public function insertCarrierLang($id_carrier, $delay)
     {
-        $sql = '
-            DELETE FROM '._DB_PREFIX_.'state
-            WHERE `id_state`='.(int)$this->getIDState($state).'
-        ';
-
-        Db::getInstance()->ExecuteS($sql);
+        Db::getInstance()->insert('carrier_lang', array(
+            'id_carrier'	=> (int)$id_carrier,
+            'id_shop'		=> (int)'1',
+            'id_lang'		=> (int)'1',
+            'delay'			=> pSQL($delay),
+        ));
 
         return true;
     }
 
-    /* DELETE Tax lang (ps_tax_lang): IGIC 7% */
-    public function delTaxLang($taxLang)
+    /* INSERT carrier shop id for a carrier */
+    public function insertCarrierShop($id_carrier)
     {
-        $sql = '
-            DELETE FROM '._DB_PREFIX_.'tax_lang
-            WHERE `name`="'.pSQL($taxLang).'"
-        ';
-
-        Db::getInstance()->ExecuteS($sql);
+        Db::getInstance()->insert('carrier_shop', array(
+            'id_carrier'	=> (int)$id_carrier,
+            'id_shop'		=> (int)'1',
+        ));
 
         return true;
     }
 
-    /* DELETE Tax (ps_tax): 7.000 or 3.000 */
-    public function delTax($taxRate)
+    /* INSERT carrier tax rules for a carrier */
+    public function insertCarrierTaxRules($id_carrier)
     {
-        $sql = '
-            DELETE FROM '._DB_PREFIX_.'tax
-            WHERE `rate`='.(float)$taxRate.'
-        ';
-
-        Db::getInstance()->ExecuteS($sql);
+        Db::getInstance()->insert('carrier_tax_rules_group_shop', array(
+            'id_carrier'	        => (int)$id_carrier,
+            'id_tax_rules_group '   => (int)'1',
+            'id_shop'		        => (int)'1',
+        ));
 
         return true;
     }
 
-    /* DELETE Tax Rules (ps_tax_rule): 7.000 or 3.000 */
-    public function delTaxRule($taxRuleDesc)
+    /* INSERT carrier zone for a carrier */
+    public function insertCarrierZone($id_carrier, $id_zone)
     {
-        $sql = '
-            DELETE FROM '._DB_PREFIX_.'tax_rule
-            WHERE `description`="'.pSQL($taxRuleDesc).'"
-        ';
-
-        Db::getInstance()->ExecuteS($sql);
+        Db::getInstance()->insert('carrier_zone', array(
+            'id_carrier'	=> (int)$id_carrier,
+            'id_zone '      => (int)$id_zone,
+        ));
 
         return true;
     }
+
+    /* INSERT carrier range weight for a carrier */
+    public function insertCarrierRangeWeight($id_carrier, $start, $end)
+    {
+        Db::getInstance()->insert('ps_range_weight', array(
+            'id_range_weight'	=> (int)'',
+            'id_carrier'		=> (int)$id_carrier,
+            'delimiter1'		=> (int)$start,
+            'delimiter2'		=> (int)$end,
+        ));
+
+        return true;
+    }
+
+    /* GET id_range_weight from ps_range_weight table */
+    public function getIDCarrierRangeWeight($id_carrier)
+    {
+        $sql = '
+            SELECT `id_range_weight`
+            FROM `' . _DB_PREFIX_ . 'range_weight`
+            WHERE `id_carrier`="' . pSQL($id_carrier) . '"
+            ORDER BY `id_carrier` DESC LIMIT 1
+        ';
+        $value = Db::getInstance()->ExecuteS($sql);
+        return $value[0]["id_range_weight"];
+    }
+
+    /* INSERT carrier price for a carrier weight range */
+    public function insertCarrierRangePrice($id_carrier, $id_zone, $id_range_weight, $price)
+    {
+        Db::getInstance()->insert('ps_delivery', array(
+            'id_delivery'		=> (int)'',
+            'id_shop'			=> (int)'1',
+            'id_shop_group'		=> (int)'1',
+            'id_carrier'		=> (int)$id_carrier,
+            'id_range_price'	=> (int)'0',
+            'id_range_weight'	=> (int)$id_range_weight,
+            'id_zone'			=> (int)$id_zone,
+            'price'				=> (int)$price,
+        ));
+
+        return true;
+    }
+
 }

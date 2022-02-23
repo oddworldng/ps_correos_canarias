@@ -337,20 +337,53 @@ class Ps_Correos_Canarias extends Module
 
         /* Notas
             - Hay que rellenar las siguientes tablas:
-                - ps_carrier
-                - ps_carrier_group
-                - ps_carrier_lang
-                - ps_carrier_shop
-                - ps_carrier_tax_rules_group_shop
-                - ps_carrier_zone
-                - ps_cart_rule_carrier
-                - ps_module_carrier
-                - ps_order_carrier
-                - ps_product_carrier
-                - ps_warehouse_carrier
+
+                - ps_carrier: contiene los datos principales del transportista (pagina 0)
+                - ps_carrier_group: contiene los datos de los grupos de usuarios activos para ese transportista
+                - ps_carrier_lang: contiene datos del texto "delay" de cada transportista
+                - ps_carrier_shop: se indica a qué tienda pertenece
+                - ps_carrier_tax_rules_group_shop: se indica la regla de impuesto del transportista
+                - ps_carrier_zone: se indican las zonas a las que se le asigna el transportista
+
+                - ps_cart_rule_carrier: NADA
+                - ps_module_carrier: NADA (una tabla que almacena las relaciones entre los módulos y los transportistas)
+                - ps_order_carrier: NADA (relaciona un transportista con un pedido)
+                - ps_product_carrier: NADA
+                - ps_warehouse_carrier: NADA
+
             - Los rangos de peso de un transportista se guardan en la tabla ps_range_weight
             - En la tabla ps_delivery se guarda el precio de cada rango creado en el transportista
         */
+
+        $carrier_name = "Nombre del Transportista";
+
+        /* New carrier */
+        $db->insertCarrier($carrier_name);
+        $id_carrier = $db->getIDCarrier($carrier_name);
+
+        /* User groups */
+        $db->insertCarrierGroup($id_carrier, 1);
+        $db->insertCarrierGroup($id_carrier, 2);
+        $db->insertCarrierGroup($id_carrier, 3);
+
+        /* Lang */
+        $db->insertCarrierLang($id_carrier, "¡Envío en 24h!");
+
+        /* Shop */
+        $db->insertCarrierShop($id_carrier);
+
+        /* Tax rules */
+        $db->insertCarrierTaxRules($id_carrier);
+
+        /* Zones */
+        $zone_name = "Zona 6: Envíos a Canarias interislas";
+        $id_zone = $db->getIDZone($zone_name);
+        $db->insertCarrierZone($id_carrier, $id_zone);
+
+        /* Ranges */
+        $db->insertCarrierRangeWeight($id_carrier, 0, 1);
+        $id_range_weight = $db->getIDCarrierRangeWeight($id_carrier);
+        $db->insertCarrierRangePrice($id_carrier, $id_zone, $id_range_weight, '5.000000');
 
 
         return true;
