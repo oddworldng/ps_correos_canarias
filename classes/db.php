@@ -53,6 +53,7 @@ class Model
             ORDER BY `id_zone` DESC LIMIT 1
         ';
         $value = Db::getInstance()->ExecuteS($sql);
+        #return $value[0]["id_zone"];
         return $value[0]["id_zone"];
     }
 
@@ -85,7 +86,7 @@ class Model
             'id_carrier' => (int)'',
             'id_reference' => (int)'1',
             'id_tax_rules_group' => (int)'0',
-            'name' => (int)$name,
+            'name' => pSQL($name),
             'url' => pSQL(''),
             'active' => (int)'0',
             'deleted' => (int)'0',
@@ -119,6 +120,7 @@ class Model
         ';
         $value = Db::getInstance()->ExecuteS($sql);
         return $value[0]["id_carrier"];
+        #return $value;
     }
 
     /* INSERT a user group for a carrier */
@@ -161,7 +163,7 @@ class Model
     {
         Db::getInstance()->insert('carrier_tax_rules_group_shop', array(
             'id_carrier'	        => (int)$id_carrier,
-            'id_tax_rules_group '   => (int)'1',
+            'id_tax_rules_group'   => (int)'1',
             'id_shop'		        => (int)'1',
         ));
 
@@ -173,7 +175,7 @@ class Model
     {
         Db::getInstance()->insert('carrier_zone', array(
             'id_carrier'	=> (int)$id_carrier,
-            'id_zone '      => (int)$id_zone,
+            'id_zone'      => (int)$id_zone,
         ));
 
         return true;
@@ -182,7 +184,7 @@ class Model
     /* INSERT carrier range weight for a carrier */
     public function insertCarrierRangeWeight($id_carrier, $start, $end)
     {
-        Db::getInstance()->insert('ps_range_weight', array(
+        Db::getInstance()->insert('range_weight', array(
             'id_range_weight'	=> (int)'',
             'id_carrier'		=> (int)$id_carrier,
             'delimiter1'		=> (int)$start,
@@ -203,21 +205,22 @@ class Model
         ';
         $value = Db::getInstance()->ExecuteS($sql);
         return $value[0]["id_range_weight"];
+        #return $value;
     }
 
     /* INSERT carrier price for a carrier weight range */
     public function insertCarrierRangePrice($id_carrier, $id_zone, $id_range_weight, $price)
     {
-        Db::getInstance()->insert('ps_delivery', array(
+        Db::getInstance()->insert('delivery', array(
             'id_delivery'		=> (int)'',
-            'id_shop'			=> (int)'1',
-            'id_shop_group'		=> (int)'1',
+            'id_shop'			=> NULL,
+            'id_shop_group'		=> NULL,
             'id_carrier'		=> (int)$id_carrier,
-            'id_range_price'	=> (int)'0',
+            'id_range_price'	=> NULL,
             'id_range_weight'	=> (int)$id_range_weight,
             'id_zone'			=> (int)$id_zone,
             'price'				=> (int)$price,
-        ));
+        ), true);
 
         return true;
     }
