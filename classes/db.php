@@ -187,8 +187,8 @@ class Model
         Db::getInstance()->insert('range_weight', array(
             'id_range_weight'	=> (int)'',
             'id_carrier'		=> (int)$id_carrier,
-            'delimiter1'		=> (int)$start,
-            'delimiter2'		=> (int)$end,
+            'delimiter1'		=> $start,
+            'delimiter2'		=> $end,
         ));
 
         return true;
@@ -204,8 +204,9 @@ class Model
             ORDER BY `id_carrier` DESC LIMIT 1
         ';
         $value = Db::getInstance()->ExecuteS($sql);
+
         return $value[0]["id_range_weight"];
-        #return $value;
+
     }
 
     /* INSERT carrier price for a carrier weight range */
@@ -219,7 +220,7 @@ class Model
             'id_range_price'	=> NULL,
             'id_range_weight'	=> (int)$id_range_weight,
             'id_zone'			=> (int)$id_zone,
-            'price'				=> (int)$price,
+            'price'				=> $price,
         ), true);
 
         return true;

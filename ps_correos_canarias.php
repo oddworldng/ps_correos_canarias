@@ -335,31 +335,46 @@ class Ps_Correos_Canarias extends Module
 
         /* CREATE CARRIER */
 
-        /* Notas
-            - Hay que rellenar las siguientes tablas:
+        /* Carta certificada: hasta 1 kg */
+        $carrier_name = "Correos (carta certificada)";
+        /*$zone_list = [
+            "Zona 1:Misma provincia (misma isla)",
+            "Zona 5: Península, Baleares, Ceuta, Melilla y Andorra",
+            "Zona 6: Envíos a Canarias interislas",
+            "Zona 9: Envíos a Portugal peninsular con origen Canarias",
+            "Zona EU1: Alemania, Austria,Bélgica...",
+            "ZONA EU2: Argelia, Bulgaria, Chipre, Croacia...",
+            "ZONA EU3: Albania, Bielorrusia, Bosnia Herzegovina...",
+            "ZONA AM: Antigua y Barbuda, Argentina...",
+            "ZONA AS-OC: Afganistán, Arabia Saudí...",
+            "ZONA AS-OC 2: Australia, Nueva Zelanda...",
+            "ZONA AF: Angola, Benin, Botswana...",
+        ];*/
+        $zones = ["Zona 1:Misma provincia (misma isla)", "Zona 5: Península, Baleares, Ceuta, Melilla y Andorra"];
+        /* ranges: zones array position, start range, end range, price */
+        $ranges = array (
+            /* Zone 1 */
+            array(1, 0.000000, 0.020000, 4.500000),
+            array(1, 0.020000, 0.050000, 4.600000),
+            array(1, 0.050000, 0.100000, 5.100000),
+            array(1, 0.100000, 0.500000, 6.450000),
+            array(1, 0.500000, 1.000000, 9.300000)
+        );
 
-                - ps_carrier: contiene los datos principales del transportista (pagina 0)
-                - ps_carrier_group: contiene los datos de los grupos de usuarios activos para ese transportista
-                - ps_carrier_lang: contiene datos del texto "delay" de cada transportista
-                - ps_carrier_shop: se indica a qué tienda pertenece
-                - ps_carrier_tax_rules_group_shop: se indica la regla de impuesto del transportista
-                - ps_carrier_zone: se indican las zonas a las que se le asigna el transportista
+        $this->createCarrier($db, $carrier_name, $zones, $ranges);
 
-                - ps_cart_rule_carrier: NADA
-                - ps_module_carrier: NADA (una tabla que almacena las relaciones entre los módulos y los transportistas)
-                - ps_order_carrier: NADA (relaciona un transportista con un pedido)
-                - ps_product_carrier: NADA
-                - ps_warehouse_carrier: NADA
+        return true;
+    }
 
-            - Los rangos de peso de un transportista se guardan en la tabla ps_range_weight
-            - En la tabla ps_delivery se guarda el precio de cada rango creado en el transportista
-        */
-
-        $carrier_name = "Nombre del Transportista";
+    public function createCarrier($db, $carrier_name, $zones_list, $ranges_multi_list)
+    {
 
         /* New carrier */
         $db->insertCarrier($carrier_name);
         $id_carrier = $db->getIDCarrier($carrier_name);
+
+        /* Copy carrier logo */
+        copy(dirname(__FILE__).'/views/img/logo-correos.jpg', _PS_SHIP_IMG_DIR_.'/'.$id_carrier.'.jpg');
 
         /* User groups */
         $db->insertCarrierGroup($id_carrier, 1);
@@ -367,7 +382,7 @@ class Ps_Correos_Canarias extends Module
         $db->insertCarrierGroup($id_carrier, 3);
 
         /* Lang */
-        $db->insertCarrierLang($id_carrier, "¡Envío en 24h!");
+        $db->insertCarrierLang($id_carrier, "Entrega a domicilio entre 5 - 7 días laborables");
 
         /* Shop */
         $db->insertCarrierShop($id_carrier);
@@ -376,17 +391,29 @@ class Ps_Correos_Canarias extends Module
         $db->insertCarrierTaxRules($id_carrier);
 
         /* Zones */
-        $zone_name = "Zona 6: Envíos a Canarias interislas";
-        $id_zone = $db->getIDZone($zone_name);
-        $db->insertCarrierZone($id_carrier, $id_zone);
+        $pos = 1;
+        foreach($zones_list as $zone_name) {
 
-        /* Ranges */
-        $db->insertCarrierRangeWeight($id_carrier, 0, 1);
-        $id_range_weight = $db->getIDCarrierRangeWeight($id_carrier);
-        $db->insertCarrierRangePrice($id_carrier, $id_zone, $id_range_weight, '5.000000');
+            $id_zone = $db->getIDZone($zone_name);
+            $db->insertCarrierZone($id_carrier, $id_zone);
+
+            /* Ranges */
+            for ($i = 0; $i < count($ranges_multi_list); $i++)
+            {
+                if ($pos == $ranges_multi_list[$i][0])
+                {
+                    $db->insertCarrierRangeWeight($id_carrier, $ranges_multi_list[$i][1], $ranges_multi_list[$i][2]);
+                    $id_range_weight = $db->getIDCarrierRangeWeight($id_carrier);
+                    $db->insertCarrierRangePrice($id_carrier, $id_zone, $id_range_weight, $ranges_multi_list[$i][3]);
+                }
+
+            }
+
+            $pos = $pos + 1;
+
+        }
 
 
-        return true;
     }
 
     public function uninstallDB()
