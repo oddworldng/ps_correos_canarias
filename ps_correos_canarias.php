@@ -101,11 +101,11 @@ class Ps_Correos_Canarias extends Module
             "ZONA AF: Angola, Benin, Botswana...",
         ];
 
-        /*foreach ($zone_list as &$zone) {
+        foreach ($zone_list as &$zone) {
             $db->installZone($zone);
             $id_zone = $db->getIDZone($zone);
             $db->installZoneShop($id_zone);
-        }*/
+        }
 
         /* ASIGN ZONE TO COUNTRY */
         $zone_country_array = [
@@ -328,19 +328,6 @@ class Ps_Correos_Canarias extends Module
         }
 
         /* CREATE CARRIER */
-        /* Zonas
-             "Zona 1:Misma provincia (misma isla)"
-             "Zona 5: Península, Baleares, Ceuta, Melilla y Andorra"
-             "Zona 6: Envíos a Canarias interislas"
-             "Zona 9: Envíos a Portugal peninsular con origen Canarias"
-             "Zona EU1: Alemania, Austria,Bélgica..."
-             "ZONA EU2: Argelia, Bulgaria, Chipre, Croacia..."
-             "ZONA EU3: Albania, Bielorrusia, Bosnia Herzegovina..."
-             "ZONA AM: Antigua y Barbuda, Argentina..."
-             "ZONA AS-OC: Afganistán, Arabia Saudí..."
-             "ZONA AS-OC 2: Australia, Nueva Zelanda..."
-             "ZONA AF: Angola, Benin, Botswana..."
-        */
 
         /* Carta certificada: Nacional y Europeo hasta 1 kg */
         $carrier_name = "Cartas certificadas";
