@@ -53,8 +53,44 @@ class Model
             ORDER BY `id_zone` DESC LIMIT 1
         ';
         $value = Db::getInstance()->ExecuteS($sql);
-        #return $value[0]["id_zone"];
+
         return $value[0]["id_zone"];
+    }
+
+    public function checkZoneExists($zone_name)
+    {
+        $sql = '
+            SELECT `id_zone`
+            FROM `' . _DB_PREFIX_ . 'zone`
+            WHERE `name`="' . pSQL($zone_name) . '" 
+            ORDER BY `id_zone` DESC LIMIT 1
+        ';
+
+        $value = Db::getInstance()->ExecuteS($sql);
+
+        if ($value == NULL) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public function checkCarrierExists($carrier_name)
+    {
+        $sql = '
+            SELECT `id_carrier`
+            FROM `' . _DB_PREFIX_ . 'carrier`
+            WHERE `name`="' . pSQL($carrier_name) . '" 
+            ORDER BY `id_carrier` DESC LIMIT 1
+        ';
+
+        $value = Db::getInstance()->ExecuteS($sql);
+
+        if ($value == NULL) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     /* UPDATE ID Zone in ps_country */

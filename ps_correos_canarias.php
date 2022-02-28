@@ -102,20 +102,26 @@ class Ps_Correos_Canarias extends Module
         ];
 
         foreach ($zone_list as &$zone) {
-            $db->installZone($zone);
-            $id_zone = $db->getIDZone($zone);
-            $db->installZoneShop($id_zone);
+
+            $exists_zone = $db->checkZoneExists($zone);
+            if (!$exists_zone)
+            {
+                $db->installZone($zone);
+                $id_zone = $db->getIDZone($zone);
+                $db->installZoneShop($id_zone);
+            }
+
         }
 
         /* ASIGN ZONE TO COUNTRY */
         $zone_country_array = [
-            "229" => "ZONA AS-OC: Afganistán, Arabia Saudí...",
-            "228" => "ZONA EU3: Albania, Bielorrusia, Bosnia Herzegovina...",
-            "1" => "Zona EU1: Alemania, Austria,Bélgica...",
-            "41" => "ZONA AF: Angola, Benin, Botswana...",
-            "38" => "ZONA EU2: Argelia, Bulgaria, Chipre, Croacia...",
-            "44" => "ZONA AM: Antigua y Barbuda, Argentina...",
-            "45" => "ZONA AS-OC: Afganistán, Arabia Saudí...",
+            "229" => "ZONA AS-OC: Afganistán, Arabia Saudí...", #Afganistán
+            "228" => "ZONA EU3: Albania, Bielorrusia, Bosnia Herzegovina...", #Albania
+            "1" => "Zona EU1: Alemania, Austria,Bélgica...", #Alemania
+            "41" => "ZONA AF: Angola, Benin, Botswana...", #Angola
+            "38" => "ZONA EU2: Argelia, Bulgaria, Chipre, Croacia...", #Argelia
+            "44" => "ZONA AM: Antigua y Barbuda, Argentina...", #Argentina
+            "45" => "ZONA AS-OC: Afganistán, Arabia Saudí...", #Armenia
             "46" => "ZONA AM: Antigua y Barbuda, Argentina...",
             "24" => "ZONA AS-OC 2: Australia, Nueva Zelanda...",
             "2" => "Zona EU1: Alemania, Austria,Bélgica...",
@@ -503,6 +509,12 @@ class Ps_Correos_Canarias extends Module
 
     public function createCarrier($db, $carrier_name, $zones_list, $ranges_multi_list)
     {
+        /* Check if carrier already exists */
+        $exists_carrier = $db->checkCarrierExists($carrier_name);
+        if ($exists_carrier)
+        {
+            return true;
+        }
 
         /* New carrier */
         $db->insertCarrier($carrier_name);
@@ -556,6 +568,8 @@ class Ps_Correos_Canarias extends Module
             $pos = $pos + 1;
 
         }
+
+        return true;
 
 
     }
