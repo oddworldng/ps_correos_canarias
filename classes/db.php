@@ -87,7 +87,7 @@ class Model
             'id_reference' => (int)'1',
             'id_tax_rules_group' => (int)'0',
             'name' => pSQL($name),
-            'url' => pSQL(''),
+            'url' => pSQL('https://www.correos.es/es/es/herramientas/localizador/envios/detalle?tracking-number=@'),
             'active' => (int)'0',
             'deleted' => (int)'0',
             'shipping_handling' => (int)'0',
@@ -206,6 +206,28 @@ class Model
         $value = Db::getInstance()->ExecuteS($sql);
 
         return $value[0]["id_range_weight"];
+
+    }
+
+    /* Check if range weight exists */
+    public function checkRangeWeight($id_carrier, $start, $end)
+    {
+        $sql = '
+            SELECT `id_range_weight`
+            FROM `' . _DB_PREFIX_ . 'range_weight`
+            WHERE `id_carrier`="' . pSQL($id_carrier) . '" 
+            AND `delimiter1`="' . pSQL($start) . '"
+            AND `delimiter2`="' . pSQL($end) . '" 
+            ORDER BY `id_carrier` DESC LIMIT 1
+        ';
+
+        $value = Db::getInstance()->ExecuteS($sql);
+
+        if ($value == NULL) {
+            return NULL;
+        } else {
+            return $value[0]["id_range_weight"];
+        }
 
     }
 

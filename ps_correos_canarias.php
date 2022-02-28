@@ -77,13 +77,13 @@ class Ps_Correos_Canarias extends Module
 
         /* CREATE BACKUP */
 
-        /* Table: ps_zone */
-        $db_backup->createTablePSZoneBackup();
-        $db_backup->backupPSZone();
+        /* Table: ps_country */
+        $db_backup->createTablePSCountryBackup();
+        $db_backup->backupPSCountry();
 
-        /* Table: ps_zone_shop */
-        $db_backup->createTablePSZoneShopBackup();
-        $db_backup->backupPSZoneShop();
+        /* Table: ps_state */
+        $db_backup->createTablePSStateBackup();
+        $db_backup->backupPSState();
 
         /* INSTALL ZONES */
         /* Ubicaciones geograficas > Zonas */
@@ -266,12 +266,6 @@ class Ps_Correos_Canarias extends Module
         }
 
         /* ASIGN ZONE TO PROVINCIAS */
-        /* Notas por hacer:
-            Buscar en la tabla ps_country, el campo id_country cuyo campo iso_code = ES (Spain)
-            Ir a la tabla ps_state, buscar el campo id_state = id_country (6, el de España)
-            Seleccionar todas las provincias que cumplan la condicion anterior (provincias españolas)
-            Asignarles las zonas 1, 5, 6 y 9
-        */
 
         $state_list = [
             "353" => "Zona 5: Península, Baleares, Ceuta, Melilla y Andorra",
@@ -334,31 +328,185 @@ class Ps_Correos_Canarias extends Module
         }
 
         /* CREATE CARRIER */
+        /* Zonas
+             "Zona 1:Misma provincia (misma isla)"
+             "Zona 5: Península, Baleares, Ceuta, Melilla y Andorra"
+             "Zona 6: Envíos a Canarias interislas"
+             "Zona 9: Envíos a Portugal peninsular con origen Canarias"
+             "Zona EU1: Alemania, Austria,Bélgica..."
+             "ZONA EU2: Argelia, Bulgaria, Chipre, Croacia..."
+             "ZONA EU3: Albania, Bielorrusia, Bosnia Herzegovina..."
+             "ZONA AM: Antigua y Barbuda, Argentina..."
+             "ZONA AS-OC: Afganistán, Arabia Saudí..."
+             "ZONA AS-OC 2: Australia, Nueva Zelanda..."
+             "ZONA AF: Angola, Benin, Botswana..."
+        */
 
-        /* Carta certificada: hasta 1 kg */
-        $carrier_name = "Correos (carta certificada)";
-        /*$zone_list = [
+        /* Carta certificada: Nacional y Europeo hasta 1 kg */
+        $carrier_name = "Cartas certificadas";
+        $zones = [
             "Zona 1:Misma provincia (misma isla)",
             "Zona 5: Península, Baleares, Ceuta, Melilla y Andorra",
             "Zona 6: Envíos a Canarias interislas",
             "Zona 9: Envíos a Portugal peninsular con origen Canarias",
             "Zona EU1: Alemania, Austria,Bélgica...",
-            "ZONA EU2: Argelia, Bulgaria, Chipre, Croacia...",
-            "ZONA EU3: Albania, Bielorrusia, Bosnia Herzegovina...",
-            "ZONA AM: Antigua y Barbuda, Argentina...",
-            "ZONA AS-OC: Afganistán, Arabia Saudí...",
-            "ZONA AS-OC 2: Australia, Nueva Zelanda...",
-            "ZONA AF: Angola, Benin, Botswana...",
-        ];*/
-        $zones = ["Zona 1:Misma provincia (misma isla)", "Zona 5: Península, Baleares, Ceuta, Melilla y Andorra"];
+            "ZONA EU2: Argelia, Bulgaria, Chipre, Croacia..."];
         /* ranges: zones array position, start range, end range, price */
         $ranges = array (
-            /* Zone 1 */
+            /* Zona 1 */
             array(1, 0.000000, 0.020000, 4.500000),
             array(1, 0.020000, 0.050000, 4.600000),
             array(1, 0.050000, 0.100000, 5.100000),
             array(1, 0.100000, 0.500000, 6.450000),
-            array(1, 0.500000, 1.000000, 9.300000)
+            array(1, 0.500000, 1.000000, 9.300000),
+            /* Zona 5 */
+            array(2, 0.000000, 0.020000, 4.500000),
+            array(2, 0.020000, 0.050000, 4.600000),
+            array(2, 0.050000, 0.100000, 5.100000),
+            array(2, 0.100000, 0.500000, 6.450000),
+            array(2, 0.500000, 1.000000, 9.300000),
+            /* Zona 6 */
+            array(3, 0.000000, 0.020000, 4.500000),
+            array(3, 0.020000, 0.050000, 4.600000),
+            array(3, 0.050000, 0.100000, 5.100000),
+            array(3, 0.100000, 0.500000, 6.450000),
+            array(3, 0.500000, 1.000000, 9.300000),
+            /* Zona 9 */
+            array(4, 0.000000, 0.020000, 6.450000),
+            array(4, 0.020000, 0.050000, 6.750000),
+            array(4, 0.050000, 0.100000, 7.550000),
+            array(4, 0.100000, 0.500000, 11.700000),
+            array(4, 0.500000, 1.000000, 18.100000),
+            /* Zona EU1 */
+            array(5, 0.000000, 0.020000, 6.450000),
+            array(5, 0.020000, 0.050000, 6.750000),
+            array(5, 0.050000, 0.100000, 7.550000),
+            array(5, 0.100000, 0.500000, 11.700000),
+            array(5, 0.500000, 1.000000, 18.100000),
+            /* Zona EU2 */
+            array(6, 0.000000, 0.020000, 6.450000),
+            array(6, 0.020000, 0.050000, 6.750000),
+            array(6, 0.050000, 0.100000, 7.550000),
+            array(6, 0.100000, 0.500000, 11.700000),
+            array(6, 0.500000, 1.000000, 18.100000)
+        );
+
+        $this->createCarrier($db, $carrier_name, $zones, $ranges);
+
+        /* PAQUETE AZUL: Nacional hasta 20 kg */
+        $carrier_name = "Paquete Azul";
+        $zones = [
+            "Zona 1:Misma provincia (misma isla)",
+            "Zona 5: Península, Baleares, Ceuta, Melilla y Andorra",
+            "Zona 6: Envíos a Canarias interislas"
+        ];
+        /* ranges: zones array position, start range, end range, price */
+        $ranges = array (
+            /* Zona 1 */
+            array(1, 0.000000, 1.000000, 15.000000),
+            array(1, 1.000000, 2.000000, 16.850000),
+            array(1, 2.000000, 5.000000, 21.250000),
+            array(1, 5.000000, 10.000000, 25.300000),
+            array(1, 10.000000, 15.000000, 36.850000),
+            array(1, 15.000000, 20.000000, 44.350000),
+            /* Zona 5 */
+            array(2, 0.000000, 1.000000, 15.000000),
+            array(2, 1.000000, 2.000000, 16.850000),
+            array(2, 2.000000, 5.000000, 21.250000),
+            array(2, 5.000000, 10.000000, 25.300000),
+            array(2, 10.000000, 15.000000, 36.850000),
+            array(2, 15.000000, 20.000000, 44.350000),
+            /* Zona 6 */
+            array(3, 0.000000, 1.000000, 15.000000),
+            array(3, 1.000000, 2.000000, 16.850000),
+            array(3, 2.000000, 5.000000, 21.250000),
+            array(3, 5.000000, 10.000000, 25.300000),
+            array(3, 10.000000, 15.000000, 36.850000),
+            array(3, 15.000000, 20.000000, 44.350000)
+        );
+
+        $this->createCarrier($db, $carrier_name, $zones, $ranges);
+
+        /* PAQUETE ESTÁNDAR: Nacional hasta 30 kg */
+        $carrier_name = "Paquete Estándar";
+        $zones = [
+            "Zona 1:Misma provincia (misma isla)",
+            "Zona 5: Península, Baleares, Ceuta, Melilla y Andorra",
+            "Zona 6: Envíos a Canarias interislas",
+            "Zona 9: Envíos a Portugal peninsular con origen Canarias"
+        ];
+        /* ranges: zones array position, start range, end range, price */
+        $ranges = array (
+            /* Zona 1 */
+            array(1, 0.000000, 1.000000, 11.280000),
+            array(1, 1.000000, 5.000000, 14.100000),
+            array(1, 5.000000, 10.000000, 18.930000),
+            array(1, 10.000000, 15.000000, 22.950000),
+            array(1, 15.000000, 20.000000, 27.770000),
+            array(1, 20.000000, 25.000000, 32.190000),
+            array(1, 25.000000, 30.000000, 36.520000),
+            /* Zona 5 */
+            array(2, 0.000000, 1.000000, 19.850000),
+            array(2, 1.000000, 5.000000, 28.650000),
+            array(2, 5.000000, 10.000000, 35.850000),
+            array(2, 10.000000, 15.000000, 45.800000),
+            array(2, 15.000000, 20.000000, 60.300000),
+            array(2, 20.000000, 25.000000, 81.050000),
+            array(2, 25.000000, 30.000000, 99.800000),
+            /* Zona 6 */
+            array(3, 0.000000, 1.000000, 10.540000),
+            array(3, 1.000000, 5.000000, 13.180000),
+            array(3, 5.000000, 10.000000, 17.690000),
+            array(3, 10.000000, 15.000000, 21.450000),
+            array(3, 15.000000, 20.000000, 25.950000),
+            array(3, 20.000000, 25.000000, 30.080000),
+            array(3, 25.000000, 30.000000, 34.130000),
+            /* Zona 9 */
+            array(4, 0.000000, 1.000000, 22.050000),
+            array(4, 1.000000, 5.000000, 35.290000),
+            array(4, 5.000000, 10.000000, 42.000000),
+            array(4, 10.000000, 15.000000, 53.550000),
+            array(4, 15.000000, 20.000000, 80.500000),
+            array(4, 20.000000, 25.000000, 99.750000),
+            array(4, 25.000000, 30.000000, 123.900000)
+        );
+
+        $this->createCarrier($db, $carrier_name, $zones, $ranges);
+
+        /* PAQUETE STANDARD INTERNACIONAL: Internacional hasta 5 kg */
+        $carrier_name = "Paquete Standard Internacional";
+        $zones = [
+            "Zona EU1: Alemania, Austria,Bélgica...",
+            "ZONA EU2: Argelia, Bulgaria, Chipre, Croacia...",
+            "ZONA EU3: Albania, Bielorrusia, Bosnia Herzegovina...",
+            "ZONA AM: Antigua y Barbuda, Argentina..."
+        ];
+        /* ranges: zones array position, start range, end range, price */
+        $ranges = array (
+            /* Zona EU1 */
+            array(1, 0.000000, 1.000000, 26.160000),
+            array(1, 1.000000, 2.000000, 28.930000),
+            array(1, 2.000000, 3.000000, 31.700000),
+            array(1, 3.000000, 4.000000, 34.470000),
+            array(1, 4.000000, 5.000000, 37.240000),
+            /* Zona EU2 */
+            array(2, 0.000000, 1.000000, 27.690000),
+            array(2, 1.000000, 2.000000, 31.330000),
+            array(2, 2.000000, 3.000000, 34.970000),
+            array(2, 3.000000, 4.000000, 38.610000),
+            array(2, 4.000000, 5.000000, 42.250000),
+            /* Zona EU3 */
+            array(3, 0.000000, 1.000000, 27.690000),
+            array(3, 1.000000, 2.000000, 37.810000),
+            array(3, 2.000000, 3.000000, 47.930000),
+            array(3, 3.000000, 4.000000, 58.050000),
+            array(3, 4.000000, 5.000000, 68.170000),
+            /* Zona AM */
+            array(4, 0.000000, 1.000000, 36.850000),
+            array(4, 1.000000, 2.000000, 46.400000),
+            array(4, 2.000000, 3.000000, 55.950000),
+            array(4, 3.000000, 4.000000, 65.500000),
+            array(4, 4.000000, 5.000000, 75.050000)
         );
 
         $this->createCarrier($db, $carrier_name, $zones, $ranges);
@@ -402,9 +550,18 @@ class Ps_Correos_Canarias extends Module
             {
                 if ($pos == $ranges_multi_list[$i][0])
                 {
-                    $db->insertCarrierRangeWeight($id_carrier, $ranges_multi_list[$i][1], $ranges_multi_list[$i][2]);
-                    $id_range_weight = $db->getIDCarrierRangeWeight($id_carrier);
-                    $db->insertCarrierRangePrice($id_carrier, $id_zone, $id_range_weight, $ranges_multi_list[$i][3]);
+                    if ($db->checkRangeWeight($id_carrier, $ranges_multi_list[$i][1], $ranges_multi_list[$i][2]) == NULL)
+                    {
+                        $db->insertCarrierRangeWeight($id_carrier, $ranges_multi_list[$i][1], $ranges_multi_list[$i][2]);
+                        $id_range_weight = $db->getIDCarrierRangeWeight($id_carrier);
+                        $db->insertCarrierRangePrice($id_carrier, $id_zone, $id_range_weight, $ranges_multi_list[$i][3]);
+                    }
+                    else
+                    {
+                        $id_range_weight = $db->checkRangeWeight($id_carrier, $ranges_multi_list[$i][1], $ranges_multi_list[$i][2]);
+                        $db->insertCarrierRangePrice($id_carrier, $id_zone, $id_range_weight, $ranges_multi_list[$i][3]);
+                    }
+
                 }
 
             }
@@ -424,15 +581,15 @@ class Ps_Correos_Canarias extends Module
 
         /* RESTORE TABLES */
 
-        /* Table: ps_zone */
-        $db_backup->truncateTable('zone');
-        $db_backup->restorePSZone();
-        $db_backup->deleteTablePSZoneBackup();
+        /* Table: ps_country */
+        $db_backup->truncateTable('country');
+        $db_backup->restorePSCountry();
+        $db_backup->deleteTablePSCountryBackup();
 
-        /* Table: ps_zone_shop */
-        $db_backup->truncateTable('zone_shop');
-        $db_backup->restorePSZoneShop();
-        $db_backup->deleteTablePSZoneShopBackup();
+        /* Table: ps_state */
+        $db_backup->truncateTable('state');
+        $db_backup->restorePSStateShop();
+        $db_backup->deleteTablePSStateBackup();
 
         return true;
     }
