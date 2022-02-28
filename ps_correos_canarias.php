@@ -553,7 +553,7 @@ class Ps_Correos_Canarias extends Module
                     if ($db->checkRangeWeight($id_carrier, $ranges_multi_list[$i][1], $ranges_multi_list[$i][2]) == NULL)
                     {
                         $db->insertCarrierRangeWeight($id_carrier, $ranges_multi_list[$i][1], $ranges_multi_list[$i][2]);
-                        $id_range_weight = $db->getIDCarrierRangeWeight($id_carrier);
+                        $id_range_weight = $db->getIDCarrierRangeWeight($id_carrier, $ranges_multi_list[$i][1], $ranges_multi_list[$i][2]);
                         $db->insertCarrierRangePrice($id_carrier, $id_zone, $id_range_weight, $ranges_multi_list[$i][3]);
                     }
                     else

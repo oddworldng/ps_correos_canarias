@@ -195,12 +195,14 @@ class Model
     }
 
     /* GET id_range_weight from ps_range_weight table */
-    public function getIDCarrierRangeWeight($id_carrier)
+    public function getIDCarrierRangeWeight($id_carrier, $start, $end)
     {
         $sql = '
             SELECT `id_range_weight`
             FROM `' . _DB_PREFIX_ . 'range_weight`
             WHERE `id_carrier`="' . pSQL($id_carrier) . '"
+            AND `delimiter1`="' . pSQL($start) . '"
+            AND `delimiter2`="' . pSQL($end) . '" 
             ORDER BY `id_carrier` DESC LIMIT 1
         ';
         $value = Db::getInstance()->ExecuteS($sql);
