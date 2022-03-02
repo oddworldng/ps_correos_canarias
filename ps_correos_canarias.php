@@ -525,7 +525,6 @@ class Ps_Correos_Canarias extends Module
         $db->insertCarrierGroup($id_carrier, 3);
 
         /* Lang */
-        /* Nota: buscar el idioma español en la tabla ps_lang y luego pasarle el ID a la tabla ps_carrier_lang */
         $id_lang = $db->getIDLang("es");
         $db->insertCarrierLang($id_carrier, "Entrega a domicilio entre 5 - 7 días laborables", $id_lang);
 
