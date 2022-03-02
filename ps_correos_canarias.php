@@ -511,10 +511,6 @@ class Ps_Correos_Canarias extends Module
     {
         /* Check if carrier already exists */
         $exists_carrier = $db->checkCarrierExists($carrier_name);
-        if ($exists_carrier)
-        {
-            return true;
-        }
 
         /* New carrier */
         $db->insertCarrier($carrier_name);
