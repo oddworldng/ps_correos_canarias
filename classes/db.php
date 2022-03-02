@@ -170,13 +170,26 @@ class Model
         return true;
     }
 
+    public function getIDLang($iso_code)
+    {
+        $sql = '
+            SELECT `id_lang`
+            FROM `' . _DB_PREFIX_ . 'lang`
+            WHERE `iso_code`="' . pSQL($iso_code) . '"
+            ORDER BY `id_lang` DESC LIMIT 1
+        ';
+        $value = Db::getInstance()->ExecuteS($sql);
+
+        return $value[0]["id_lang"];
+    }
+
     /* INSERT carrier delay for a carrier */
-    public function insertCarrierLang($id_carrier, $delay)
+    public function insertCarrierLang($id_carrier, $delay, $id_lang)
     {
         Db::getInstance()->insert('carrier_lang', array(
             'id_carrier'	=> (int)$id_carrier,
             'id_shop'		=> (int)'1',
-            'id_lang'		=> (int)'1',
+            'id_lang'		=> (int)$id_lang,
             'delay'			=> pSQL($delay),
         ));
 
@@ -199,7 +212,7 @@ class Model
     {
         Db::getInstance()->insert('carrier_tax_rules_group_shop', array(
             'id_carrier'	        => (int)$id_carrier,
-            'id_tax_rules_group'   => (int)'1',
+            'id_tax_rules_group'   => (int)'0',
             'id_shop'		        => (int)'1',
         ));
 
