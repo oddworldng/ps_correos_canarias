@@ -20,7 +20,7 @@ Estas tarifas son aplicadas a las [diferentes zonas de Correos](https://www.corr
 
 ## Comunidad de Prestashop
 
-He aportado este módulo a toda la comunidad de Prestashop, publicando de forma gratuita y libre de modificaciones en el [foro oficial de Prestashop en España](https://www.prestashop.com/forums/topic/568635-modulo-igic-impuestos-para-canarias/).
+He aportado este módulo a toda la comunidad de Prestashop, publicando de forma gratuita y libre de modificaciones en el [foro oficial de Prestashop en España](https://www.prestashop.com/forums/topic/1061243-modulo-correos-desde-canarias-con-tarifas-oficiales/?tab=comments#comment-3381578).
 
 ## Autores
 
