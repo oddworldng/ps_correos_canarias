@@ -26,7 +26,6 @@ He aportado este módulo a toda la comunidad de Prestashop, publicando de forma 
 
 **Andrés Nacimiento**.
 
-* **Experto en Prestashop**.
 * Ingeniero informático por la [Universidad de La Laguna](https://www.ull.es/).
 
 **Jésica Carballo**.
