@@ -22,13 +22,12 @@ Estas tarifas son aplicadas a las [diferentes zonas de Correos](https://www.corr
 
 He aportado este módulo a toda la comunidad de Prestashop, publicando de forma gratuita y libre de modificaciones en el [foro oficial de Prestashop en España](https://www.prestashop.com/forums/topic/568635-modulo-igic-impuestos-para-canarias/).
 
-## Autor
+## Autores
 
 **Andrés Nacimiento**.
 
 * **Experto en Prestashop**.
 * Ingeniero informático por la [Universidad de La Laguna](https://www.ull.es/).
-* Máster en Ingeniería Informática por la [Universidad de La Laguna](https://www.ull.es/).
-* **Profesor** de los siguientes **cursos** en la [Universidad de La Laguna](https://www.ull.es/):
-  * **Prestashop básico**: crea tu propia tienda online.
-  * **Prestashop avanzado**: desarrollando módulos.
+
+**Jésica Carballo**.
+* Ingeniera informática por la [Universidad de La Laguna](https://www.ull.es/).
